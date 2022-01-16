@@ -1,228 +1,5 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
-  <link rel="stylesheet" href="/lib/pace/pace-theme-loading-bar.min.css">
-  <script src="/lib/pace/pace.min.js"></script>
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"j-d-x.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="题目：Manacher 算法算法简介：  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="manacher算法">
-<meta property="og:url" content="http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/index.html">
-<meta property="og:site_name" content="大佬养成日记">
-<meta property="og:description" content="题目：Manacher 算法算法简介：  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="d:/tools/Blog/public/images/manachar_1.png">
-<meta property="og:image" content="d:/tools/Blog/public/images/manachar_2.png">
-<meta property="og:image" content="d:/tools/Blog/public/images/manachar_3.png">
-<meta property="og:image" content="d:/tools/Blog/public/images/manachar_4.png">
-<meta property="article:published_time" content="2021-11-01T02:25:10.000Z">
-<meta property="article:modified_time" content="2021-11-01T04:25:52.406Z">
-<meta property="article:author" content="JDX">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="回文字符串">
-<meta property="article:tag" content="manacher">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:/tools/Blog/public/images/manachar_1.png">
-
-<link rel="canonical" href="http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/">
-
-
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
-
-  <title>manacher算法 | 大佬养成日记</title>
-  
-
-
-
-
-
-
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
-
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
-
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">大佬养成日记</h1>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-    </div>
-  </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
-</nav>
-
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/ht.jpg">
-      <meta itemprop="name" content="JDX">
-      <meta itemprop="description" content="一个兴趣使然的程序员">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大佬养成日记">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          manacher算法
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-11-01 10:25:10 / 修改时间：12:25:52" itemprop="dateCreated datePublished" datetime="2021-11-01T10:25:10+08:00">2021-11-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">刷题笔记</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-        <h2 id="题目：Manacher-算法"><a href="#题目：Manacher-算法" class="headerlink" title="题目：Manacher 算法"></a>题目：Manacher 算法</h2><h3 id="算法简介："><a href="#算法简介：" class="headerlink" title="算法简介："></a>算法简介：</h3><p>  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。</p>
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>manacher算法 - 大佬养成日记</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="大佬养成日记"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="大佬养成日记"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="题目：Manacher 算法算法简介：  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。"><meta property="og:type" content="blog"><meta property="og:title" content="manacher算法"><meta property="og:url" content="http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/"><meta property="og:site_name" content="大佬养成日记"><meta property="og:description" content="题目：Manacher 算法算法简介：  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="d:/tools/Blog/public/images/manachar_1.png"><meta property="og:image" content="d:/tools/Blog/public/images/manachar_2.png"><meta property="og:image" content="d:/tools/Blog/public/images/manachar_3.png"><meta property="og:image" content="d:/tools/Blog/public/images/manachar_4.png"><meta property="article:published_time" content="2021-11-01T02:25:10.000Z"><meta property="article:modified_time" content="2021-11-01T04:25:52.406Z"><meta property="article:author" content="JDX"><meta property="article:tag" content="java"><meta property="article:tag" content="回文字符串"><meta property="article:tag" content="manacher"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="D:/tools/Blog/public/images/manachar_1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/"},"headline":"manacher算法","image":["d:/tools/Blog/public/images/manachar_1.png","d:/tools/Blog/public/images/manachar_2.png","d:/tools/Blog/public/images/manachar_3.png","d:/tools/Blog/public/images/manachar_4.png"],"datePublished":"2021-11-01T02:25:10.000Z","dateModified":"2021-11-01T04:25:52.406Z","author":{"@type":"Person","name":"JDX"},"publisher":{"@type":"Organization","name":"大佬养成日记","logo":{"@type":"ImageObject","url":{"text":"Fighting!"}}},"description":"题目：Manacher 算法算法简介：  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。"}</script><link rel="canonical" href="http://j-d-x.github.io/2021/11/01/manacher%E7%AE%97%E6%B3%95/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 6.0.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Fighting!</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2021-11-01T02:25:10.000Z" title="2021/11/1 上午10:25:10">2021-11-01</time>发表</span><span class="level-item"><time dateTime="2021-11-01T04:25:52.406Z" title="2021/11/1 下午12:25:52">2021-11-01</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0/">刷题笔记</a></span><span class="level-item">11 分钟读完 (大约1602个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">manacher算法</h1><div class="content"><h2 id="题目：Manacher-算法"><a href="#题目：Manacher-算法" class="headerlink" title="题目：Manacher 算法"></a>题目：Manacher 算法</h2><h3 id="算法简介："><a href="#算法简介：" class="headerlink" title="算法简介："></a>算法简介：</h3><p>  Manacher算法是一个叫Manacher的人在1975年发明的， 这个方法最大的贡献是将回文字符串匹配的时间复杂度降低到了线性。</p>
 <span id="more"></span>
 <h3 id="算法流程："><a href="#算法流程：" class="headerlink" title="算法流程："></a>算法流程：</h3><p>  首先先解决字符串奇偶不一样的问题，我们在每两个字符的中间加入一个’#’(可以不是#，只要是字符串中原来没有出现过的字符就行)，之后为了使我们在遍历匹配字符的过程中，到达边界能够自动结束，所以我们在字符串的两头分别加入’^’和’$’（同理，也可以不是这两个字符，只要是原字符串中没有出现过的字符即可）。<br>  原理：因为奇数个字符的“空隙”一定有偶数个，偶数个字符的“空隙”一定有奇数个，所以我们这么改变字符串之后，字符串一定会变成奇数字符串，这样就解决了奇偶字符串匹配不一样的问题。<br>  之后，我们用一个数组P来保存，以当前字符为中心，能向两边扩展的长度，也就是回文半径,而回文半径正好是去掉’#’的原字符串的总长度。举个栗子🌰：<br><img src="D:/tools/Blog/public/images/manachar_1.png" alt="avatar"><br>  从上图中，可以看到P[6] = 5,也就是在P[6]这个位置，可以向两边扩展5个长度的字符串，组成回文字符串，即”#c#b#c#b#c#”,去掉所有’#’后，变成了”cbcbc”，他的长度正好是回文半径的长度5。<br>  接下来，我们就可以求出原回文字符串开头位置字符的下标了，用P的下标i减去P[i]再除以2，这是因为，前面每个字符中间都有一个’#’所以前面的字符数和’#’数相等，所以我们用当前下标减去回文半径再除以二就得到了原回文字符串开头位置的下标了。<br>  举个例子🌰：还是上面那个图，比如我们要求P[6]对应的回文字符串开头位置的下标，我们就用（6-5）/ 2 = 0，就说明开头位置的下标是0，所以我们得到的回文子字符串的下标就是[0，5-1] = [0,4]<br>  接下来，就到了整个算法的关键所在了，就是求P[i]，求以每个字符为中心的回文半径，在这一步充分利用了回文字符串的对称性。<br>  我们规定，用C表示回文字符串的中心，R表示回文半径，所以R=C+P[i]，C和R所对应的回文字符串是当前循环中最靠右的回文字符串。<br>  我们用i表示当前正在求得回文字符串的中心位置的下标，i_mirror表示i关于C对称的下标。🌰：<br><img src="D:/tools/Blog/public/images/manachar_2.png" alt="avatar"></p>
 <p>  我们现在要求P[i]，如果使用中心扩展法，我们就直接从i往两边扩展就行了，但是这样时间复杂度太高，我们可以利用回文字符串C的对称性，i关于C的对称点是i_mirror，P[i_mirror]= 3，所以P[i]也等于3。但是有三种情况会造成给P[i]直接赋值P[i_mirror]不正确，下面一一讨论。</p>
@@ -237,215 +14,48 @@
 </ol>
 <h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">preProcess</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = s.length();</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;^$&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    String ret = <span class="string">&quot;^&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">        ret += <span class="string">&quot;#&quot;</span> + s.charAt(i);</span><br><span class="line">    ret += <span class="string">&quot;#$&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 马拉车算法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">longestPalindrome2</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">    String T = preProcess(s);</span><br><span class="line">    <span class="keyword">int</span> n = T.length();</span><br><span class="line">    <span class="keyword">int</span>[] P = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">    <span class="keyword">int</span> C = <span class="number">0</span>, R = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; n - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> i_mirror = <span class="number">2</span> * C - i;</span><br><span class="line">        <span class="keyword">if</span> (R &gt; i) &#123;</span><br><span class="line">            P[i] = Math.min(R - i, P[i_mirror]);<span class="comment">// 防止超出 R</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            P[i] = <span class="number">0</span>;<span class="comment">// 等于 R 的情况</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 碰到之前讲的三种情况时候，需要利用中心扩展法</span></span><br><span class="line">        <span class="keyword">while</span> (T.charAt(i + <span class="number">1</span> + P[i]) == T.charAt(i - <span class="number">1</span> - P[i])) &#123;</span><br><span class="line">            P[i]++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断是否需要更新 R</span></span><br><span class="line">        <span class="keyword">if</span> (i + P[i] &gt; R) &#123;</span><br><span class="line">            C = i;</span><br><span class="line">            R = i + P[i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 找出 P 的最大值</span></span><br><span class="line">    <span class="keyword">int</span> maxLen = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> centerIndex = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; n - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (P[i] &gt; maxLen) &#123;</span><br><span class="line">            maxLen = P[i];</span><br><span class="line">            centerIndex = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> start = (centerIndex - maxLen) / <span class="number">2</span>; <span class="comment">//最开始讲的求原字符串下标</span></span><br><span class="line">    <span class="keyword">return</span> s.substring(start, start + maxLen);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>第一次写关于算法相关的解释，写的不好，请大佬们多多指点。本文参考了leetcode的题解，链接也放到最下面啦。<br>作者：windliang<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/longest-palindromic-substring/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-bao-gu/">https://leetcode-cn.com/problems/longest-palindromic-substring/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-bao-gu/</a></p>
-
-    </div>
-
-    
-    
-    
-
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag"># 回文字符串</a>
-              <a href="/tags/manacher/" rel="tag"># manacher</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/10/30/63-%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84/" rel="prev" title="63.不同路径 Ⅱ">
-      <i class="fa fa-chevron-left"></i> 63.不同路径 Ⅱ
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/11/20/Binary-Search/" rel="next" title="二分查找模板">
-      二分查找模板 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%EF%BC%9AManacher-%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">题目：Manacher 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">算法简介：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">算法流程：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">代码：</span></a></li></ol></li></ol></div>
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="JDX"
-      src="/images/ht.jpg">
-  <p class="site-author-name" itemprop="name">JDX</p>
-  <div class="site-description" itemprop="description">一个兴趣使然的程序员</div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives">
-        
-          <span class="site-state-item-count">14</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories">
-          
-        <span class="site-state-item-count">6</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">18</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/j-d-x" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;j-d-x" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-  </div>
-
-
-
-      </div>
-
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Powerby - JDX</span>
-</div>
-  <div class="powered-by"> J-D-X 个人专属
-  </div>
-
-        
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
-
-  
-  
-  <script color='255,0,128' opacity='0.8' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-  
-
-</body>
-</html>
+</div><div class="article-licensing box"><div class="licensing-title"><p>manacher算法</p><p><a href="http://j-d-x.github.io/2021/11/01/manacher算法/">http://j-d-x.github.io/2021/11/01/manacher算法/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>JDX</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2021-11-01</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2021-11-01</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/java/">java</a><a class="link-muted mr-2" rel="tag" href="/tags/%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2/">回文字符串</a><a class="link-muted mr-2" rel="tag" href="/tags/manacher/">manacher</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/11/20/Binary-Search/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">二分查找模板</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/10/30/63-%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84/"><span class="level-item">63.不同路径 Ⅱ</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg2.tapimg.com%2Fbbcode%2Fimages%2Fc8350d4ed9ae471066b19387200c3f1a.gif&amp;refer=http%3A%2F%2Fimg2.tapimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1644905451&amp;t=02cd59b403efb0697d246a557feb7c34" alt="J-D-X"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">J-D-X</p><p class="is-size-6 is-block">BUPT-SE 硕士在读</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>北京</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">14</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">18</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/J-D-X" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/J-D-X"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Leetcode" href="https://github.com/J-D-X"><i class="fab fa-leetcode"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Mark-Text/"><span class="tag">Mark Text</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/hexo%E6%95%99%E7%A8%8B/"><span class="tag">hexo教程</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/java/"><span class="tag">java</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/manacher/"><span class="tag">manacher</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/"><span class="tag">二分查找</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/"><span class="tag">位运算</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"><span class="tag">动态规划</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8D%95%E8%B0%83%E6%A0%88/"><span class="tag">单调栈</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%8D%9A%E5%AE%A2/"><span class="tag">博客</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2/"><span class="tag">回文字符串</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"><span class="tag">年度总结</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/"><span class="tag">括号匹配</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9A%B4%E5%8A%9Bdfs/"><span class="tag">暴力dfs</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AC%94%E8%AE%B0/"><span class="tag">笔记</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%80%E5%8D%95%E6%A8%A1%E6%8B%9F/"><span class="tag">简单模拟</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/"><span class="tag">背包问题</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2/"><span class="tag">记忆化搜索</span><span class="tag">2</span></a></div></div></div></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3"><!--!--><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Mark-Text/"><span class="level-start"><span class="level-item">Mark Text</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/hexo%E6%95%99%E7%A8%8B/"><span class="level-start"><span class="level-item">hexo教程</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0/"><span class="level-start"><span class="level-item">刷题笔记</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E5%8A%9B%E6%89%A3%E9%A2%98%E8%A7%A3/"><span class="level-start"><span class="level-item">力扣题解</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"><span class="level-start"><span class="level-item">年度总结</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/"><span class="level-start"><span class="level-item">每日一题</span></span><span class="level-end"><span class="level-item tag">7</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-12-31T09:08:18.000Z">2021-12-31</time></p><p class="title"><a href="/2021/12/31/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%932/">2021年度总结</a></p><p class="categories"><a href="/categories/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/">年度总结</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-12-28T06:14:52.000Z">2021-12-28</time></p><p class="title"><a href="/2021/12/28/marktexttip/">Mark Text快捷键大全</a></p><p class="categories"><a href="/categories/Mark-Text/">Mark Text</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-11-20T13:52:16.000Z">2021-11-20</time></p><p class="title"><a href="/2021/11/20/Binary-Search/">二分查找模板</a></p><p class="categories"><a href="/categories/%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0/">刷题笔记</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-11-01T02:25:10.000Z">2021-11-01</time></p><p class="title"><a href="/2021/11/01/manacher%E7%AE%97%E6%B3%95/">manacher算法</a></p><p class="categories"><a href="/categories/%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0/">刷题笔记</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-10-30T02:36:12.000Z">2021-10-30</time></p><p class="title"><a href="/2021/10/30/63-%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84/">63.不同路径 Ⅱ</a></p><p class="categories"><a href="/categories/%E5%8A%9B%E6%89%A3%E9%A2%98%E8%A7%A3/">力扣题解</a></p></div></article></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Fighting!</a><p class="is-size-7"><span>&copy; 2022 JDX</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
